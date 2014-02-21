@@ -28,7 +28,6 @@ shinyServer(function(input, output) {
 	  
 	  # compute the ratio between the minimal and the maximal BF
 	  ratio <- ddply(bf, .(n), function(x) c(ratio=max(exp(x$BF))/min(exp(x$BF))))
-	  print(ratio)
 	  
 	  # Plot the results
 	  par(mar=c(5, 5, 2, 2) + 0.1)
