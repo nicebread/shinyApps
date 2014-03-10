@@ -11,8 +11,7 @@ This is a collection of interactive tools, built with shiny.
 
 ## Run in a web browser - no local R installation needed! ##
 
-Some of the apps are also hosted on ShinyApps.io, a server provided by the RStudio team.
-These apps can run in the browser on any computer, without the need of a local R installation! This might be helpful for teaching purposes.
+Some of the apps are also hosted on a shiny server. These apps can run in the browser on any computer, without the need of a local R installation! This might be helpful for teaching purposes.
 
 Currently, the following apps can be run from the server:
 
