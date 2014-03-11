@@ -20,6 +20,7 @@ shinyServer(function(input, output) {
 		  for (r in r.range) {
 			  bf <- rbind(bf, data.frame(
 				  BF 	= ttest.tstat(t=d2t(input$D, n), n1=n, n2=n, rscale=r)$bf,
+				  BF0 	= ttest.tstat(t=0, n1=n, n2=n, rscale=r)$bf,
 				  n		= n,
 				  r		= r
 			  ))
@@ -34,6 +35,7 @@ shinyServer(function(input, output) {
 	  plot(NA, 
 		  xlim	= c(min(n.range), input$max.N*1.25), 
 		  ylim	= c(-log(30), log(30)), 
+		  #ylim	= c(-log(30000), log(30000)), 
 		  xlab	= "n in each group", 
 		  ylab	= "", 
 		  las	= 2,
@@ -50,7 +52,8 @@ shinyServer(function(input, output) {
 	  
 	  # plot the lines
 	  for (r in r.range) {
-		  lines(bf$n[bf$r == r], bf$BF[bf$r == r], col=which(r.range == r))
+		  lines(bf$n[bf$r == r], bf$BF[bf$r == r], col=which(r.range == r), lwd=2)
+		  lines(bf$n[bf$r == r], bf$BF0[bf$r == r], col=which(r.range == r), lty="dashed", lwd=2)
 	  }
 	  
 	  # annotation

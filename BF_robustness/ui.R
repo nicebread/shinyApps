@@ -11,7 +11,7 @@ shinyUI(pageWithSidebar(
 		
   		sliderInput("D", "Population effect size (Cohen's d):", min = 0, max = 3, value = 0.4, step=0.01),
 		textInput("rs", "Scale parameters for the H1 prior (as comma separated values):", "0.71, 1, 1.41"),
-  		sliderInput("max.N", "Maximum sample size per group:", min = 5, max = 2000, value = 250, step=5),
+  		sliderInput("max.N", "Maximum sample size per group:", min = 5, max = 5000, value = 250, step=5),
 		
 		helpText("Note: The widget assumes that a two-sample t test is computed.",
 		         "N defines the sample size of each group.")
