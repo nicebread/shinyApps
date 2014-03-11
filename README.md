@@ -14,7 +14,6 @@ This is a collection of interactive tools, built with shiny.
 Some of the apps are also hosted online on [shinyapps.org](http://www.shinyapps.org).
 These apps can run in the browser on any computer, without the need of a local R installation! This might be helpful for teaching purposes.
 
-
 ## Run locally without installation ##
 
 You can run the apps locally by downloading them temporarily from Github (i.e., you only need an internet connection for the initial download, then the app runs locally. However, when closing R the download is lost and not available locally any more).
