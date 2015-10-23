@@ -1,0 +1,100 @@
+library(shiny)
+    
+# input <- list(percTrue=30, alpha=.05, power=.35, bias=0)
+	
+	
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
+	
+	# compute PPV etc only once for all outputs--> reactive values
+	computePPV <- reactive({ 
+		c <- 500		# number of studies in plots
+		nrow <- 25
+		ncol <- c/nrow
+		df <- expand.grid(x = c(1:nrow), y = c(1:ncol))
+
+		# compute prestudy odds of true relationships true/false
+		R <- input$percTrue/(100-input$percTrue)
+		
+		# Alpha level
+		alpha <- input$alpha
+		# power
+		power <- input$power
+		# beta Fehler
+		beta <- 1 - power
+		# bias
+		u <- input$bias/100		# Ioannidis calls it "u"
+		
+		# Hits 
+		hit <- (c*power*R + u*c*beta*R)/(R + 1)
+		falsealarm <- (c*alpha + u*c*(1 - alpha))/(R + 1)
+		miss <- (1-u)*c*beta*R / (R + 1)
+		truerejection <- (1-u)*c*(1-alpha)/(R + 1)
+
+		# marginals
+		h1 <- round(c * R / (R + 1))
+		h0 <- round(c / (R + 1))
+		significant <- round(c*(R + alpha - beta*R + u - u*alpha + u*beta*R)/(R + 1))
+		not.significant <- round(c*(1-u)*(1 - alpha + beta*R)/(R + 1))
+		
+		# sanity check:
+		if (hit+falsealarm+miss+truerejection != c) print(paste0("Error: 1000 != ", hit+falsealarm+miss+truerejection))
+		if (h1 + h0 != c) print(paste0("Error: 1000 != ", h1 + h0))
+		if (significant + not.significant != c) print(paste0("Error: 1000 != ", significant + not.significant))
+
+		# positive predictive value
+		ppv <- (power * R + u*beta*R) / (R + alpha - beta*R + u - u*alpha + u*beta*R)
+		fdr <- 1-ppv
+
+		# fill in the ground truths types
+		df$ground <- c(rep(FALSE, times=h0), rep(TRUE, times=h1))
+
+		# fill in the false alarms: h0 is true and test is significant
+		df$test <- FALSE
+		df$test[df$ground==TRUE][1:hit] <- TRUE
+		df$test[df$ground==FALSE][1:falsealarm] <- TRUE
+		
+		# check
+		#table(test=df$test, ground=df$ground)
+
+		# combine types
+		df$type[!df$ground & !df$test] <- "true negative"
+		df$type[!df$ground & df$test] <- "false positive"
+		df$type[df$ground & df$test] <- "true positive"
+		df$type[df$ground & !df$test] <- "false negative"
+		df$type <- factor(df$type)
+		return(list(df=df, ppv=ppv, fdr=fdr))
+	})
+	
+
+	
+	output$res <- renderUI({
+		PPV <- computePPV()
+			
+		# color translation tables
+		colTrans <- c("darkblue", "red", "orange", "green3")
+		names(colTrans) <- c("false negative", "false positive", "true negative", "true positive")
+		
+		colTrans2 <- c("white", "red", "white", "green3")
+		names(colTrans2) <- c("false negative", "false positive", "true negative", "true positive")
+			
+		return(list(
+			HTML(paste0(
+				"<b>Positive predictive value (PPV)</b>: ", round(PPV$ppv*100), "% of claimed findings are true</b><br>
+				 <b>False discovery rate (FDR)</b>: ", round(PPV$fdr*100), "% of claimed findings are false</b>")),
+			h4("If we consider all findings, it looks like this (each point is one study):"),
+			renderPlot({
+				par(mar=c(0, 0, 0, 0))
+				plot(PPV$df$y, PPV$df$x, col=colTrans[PPV$df$type], pch=20, axes=FALSE, ylim=c(1, max(PPV$df$x)+3), xlab="", ylab="")
+				legend("top", pch=20, col=c("red", "orange", "green3", "darkblue"), legend=c("False positives", "True negatives", "True positives", "False negatives"), bty="n", horiz=TRUE, cex=1.3)
+			}, height=250),
+			br(),
+			HTML("<h4>If we consider <b>only the significant</b> findings, the ratio of true to false positives looks like this:</h4>"),
+			renderPlot({
+				par(mar=c(0, 0, 0, 0))
+				plot(PPV$df$y, PPV$df$x, col=colTrans2[PPV$df$type], pch=20, axes=FALSE, xlab="", ylab="")
+			}, height=250)
+		))
+		
+	})
+})

@@ -75,10 +75,10 @@ BFrobustplot <- function(
 	
 		# add annotation
 		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=-2.85, label=paste0("Strong~H[", ifelse(forH1==TRUE,0,1), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
-		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=-1.7 , label=paste0("Substantial~H[", ifelse(forH1==TRUE,0,1), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
+		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=-1.7 , label=paste0("Moderate~H[", ifelse(forH1==TRUE,0,1), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
 		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=-.55 , label=paste0("Anectodal~H[", ifelse(forH1==TRUE,0,1), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
 		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=2.86 , label=paste0("Strong~H[", ifelse(forH1==TRUE,1,0), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
-		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=1.7  , label=paste0("Substantial~H[", ifelse(forH1==TRUE,1,0), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
+		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=1.7  , label=paste0("Moderate~H[", ifelse(forH1==TRUE,1,0), "]"), hjust=1, vjust=.5, size=3, color="black", parse=TRUE)
 		p1 <- p1 + annotate("text", x=max(rs)*1.8, y=.55  , label=paste0("Anectodal~H[", ifelse(forH1==TRUE,1,0), "]"), hjust=1, vjust=.5, vjust=.5, size=3, color="black", parse=TRUE)
 		
 		# set scale ticks
@@ -97,13 +97,14 @@ shinyServer(function(input, output) {
 
   output$plot <- renderPlot({
 	
+
 	  # import the ts and ns
 	  ts <- as.numeric(strsplit(input$ts, ",")[[1]])
 	  ns <- as.numeric(strsplit(input$ns, ",")[[1]])
 	  labels <- strsplit(input$labels, ",")[[1]]
 	  if (length(labels) == 0) labels <- c()
 	
-	  p1 <- BFrobustplot(ts=ts, ns=ns, labels=labels, sides=input$sides, forH1=input$forH1)
+	  p1 <- BFrobustplot(ts=ts, ns=ns, labels=labels, sides=input$sides, forH1=input$forH1 == "H1")
 	  plot(p1)
   })
   
