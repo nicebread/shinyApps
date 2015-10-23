@@ -3,6 +3,8 @@
 .Rapp.*
 .httr*
 
+SBF_detailed.RData
+
 # Example code in package build process
 *-Ex.R
 
