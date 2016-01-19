@@ -1,13 +1,19 @@
 library(shiny)
     
 # input <- list(percTrue=30, alpha=.05, power=.35, bias=0)
-	
+presetselection <- new.env()
+presetselection$sel <- "---"
 	
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 	
 	# compute PPV etc only once for all outputs--> reactive values
 	computePPV <- reactive({ 
+		
+		# if user changes a parameter: reset preset selector to "---"
+		isolate({updateSelectInput(session, inputId = "preset", selected=presetselection$sel)})
+		presetselection$sel <- "---"
+		
 		c <- 500		# number of studies in plots
 		nrow <- 25
 		ncol <- c/nrow
@@ -15,6 +21,8 @@ shinyServer(function(input, output) {
 
 		# compute prestudy odds of true relationships true/false
 		R <- input$percTrue/(100-input$percTrue)
+		#if (R==0) R <- 0.001
+		if (is.infinite(R)) R <- 100000
 		
 		# Alpha level
 		alpha <- input$alpha
@@ -55,15 +63,15 @@ shinyServer(function(input, output) {
 		df$test[df$ground==FALSE][1:falsealarm] <- TRUE
 		
 		# check
-		#table(test=df$test, ground=df$ground)
+		#table(test=df$test, ground=df$ground)		
 
 		# combine types
 		df$type[!df$ground & !df$test] <- "true negative"
 		df$type[!df$ground & df$test] <- "false positive"
 		df$type[df$ground & df$test] <- "true positive"
 		df$type[df$ground & !df$test] <- "false negative"
-		df$type <- factor(df$type)
-		return(list(df=df, ppv=ppv, fdr=fdr))
+		df$type <- factor(df$type, levels=c("false negative", "false positive", "true negative", "true positive"))
+		return(list(df=df, ppv=ppv, fdr=fdr, hit=hit, falsealarm=falsealarm, miss=miss, truerejection=truerejection, c=c))
 	})
 	
 
@@ -80,8 +88,10 @@ shinyServer(function(input, output) {
 			
 		return(list(
 			HTML(paste0(
-				"<b>Positive predictive value (PPV)</b>: ", round(PPV$ppv*100), "% of claimed findings are true</b><br>
-				 <b>False discovery rate (FDR)</b>: ", round(PPV$fdr*100), "% of claimed findings are false</b>")),
+				"true positives: ", round(PPV$hit/PPV$c*100, 1), "%; false negatives: ", round(PPV$miss/PPV$c*100, 1), 
+				"%; true negatives: ", round(PPV$truerejection/PPV$c*100, 1), "%; false positives: ", round(PPV$falsealarm/PPV$c*100, 1), "%<br><br>",
+				"<b>Positive predictive value (PPV)</b>: ", round(PPV$ppv*100, 1), "% of claimed findings are true</b><br>
+				 <b>False discovery rate (FDR)</b>: ", round(PPV$fdr*100, 1), "% of claimed findings are false</b>")),
 			h4("If we consider all findings, it looks like this (each point is one study):"),
 			renderPlot({
 				par(mar=c(0, 0, 0, 0))
@@ -96,5 +106,67 @@ shinyServer(function(input, output) {
 			}, height=250)
 		))
 		
+	})
+	
+	# ---------------------------------------------------------------------
+	# Load demo data
+	observeEvent(input$preset, {
+		switch(input$preset,
+			"p1" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 0.50*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.80)
+				updateSliderInput(session, inputId = "bias", value = 0.10*100)				
+				},
+			"p2" = {
+				updateSliderInput(session, inputId = "percTrue", value = 2/3*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.95)
+				updateSliderInput(session, inputId = "bias", value = 0.30*100)
+				},
+			"p3" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 0.25*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.80)
+				updateSliderInput(session, inputId = "bias", value = 0.40*100)
+				},
+			"p4" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/6*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.20)
+				updateSliderInput(session, inputId = "bias", value = 0.20*100)
+				},
+			"p5" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/6*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.20)
+				updateSliderInput(session, inputId = "bias", value = 0.80*100)
+				},
+			"p6" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/11*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.80)
+				updateSliderInput(session, inputId = "bias", value = 0.30*100)
+				},
+			"p7" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/11*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.20)
+				updateSliderInput(session, inputId = "bias", value = 0.30*100)
+				},
+			"p8" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/1001*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.20)
+				updateSliderInput(session, inputId = "bias", value = 0.80*100)
+				},
+			"p9" = {				
+				updateSliderInput(session, inputId = "percTrue", value = 1/1001*100)
+				updateSliderInput(session, inputId = "alpha", value = 0.05)
+				updateSliderInput(session, inputId = "power", value = 0.20)
+				updateSliderInput(session, inputId = "bias", value = 0.20*100)
+				}					
+		)
+		presetselection$sel <- input$preset
 	})
 })

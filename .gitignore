@@ -11,3 +11,4 @@ SBF_detailed.RData
 # Local files
 deploy.R
 shinyapps
+.Rproj.user
