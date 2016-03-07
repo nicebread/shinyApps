@@ -7,6 +7,7 @@
 #' @param n A vector of numbers for the x axis
 #' @param bf A vector of Bayes factors (same length as x)
 #' @param linetype If several lines should be drawn, this variable defines which data point belongs to which line
+#' @param linetype.label The heading of the linetype legend
 #' @param xlab Label for x axis
 #' @param ylab Label for y axis
 #' @param ylim Limits of y axis, in raw BF units. If NA, plot is automatically adjusted to range of data.
@@ -38,8 +39,7 @@
 #' seqBFplot(5:10, bf)
 #' seqBFplot(1:100, cumsum(rnorm(100, 2)))
 
-seqBFplot <- function(n, bf, linetype=NA, xlab="n", ylab="log(bf)", main="", ylim=NA, log.it=TRUE, forH1=TRUE, fontsize=3.2) {
-	library(ggplot2)
+seqBFplot <- function(n, bf, linetype=NA, linetype.label="Alternative", xlab="n", ylab="Bayes Factor", main="", ylim=NA, log.it=TRUE, forH1=TRUE, fontsize=3.2) {
 	if (length(n) != length(bf)) stop("`n` and `bf` should have the same length")
 	if (length(n) < 1) stop("`n`and `bf` must habe length > 1")
 		
@@ -82,7 +82,7 @@ seqBFplot <- function(n, bf, linetype=NA, xlab="n", ylab="log(bf)", main="", yli
 		if (is.na(linetype[1])) {
 			p1 <- p1 + geom_line()
 		} else {
-			p1 <- p1 + geom_line(aes(linetype=Alt, group=Alt))
+			p1 <- p1 + geom_line(aes(linetype=Alt, group=Alt)) + scale_linetype_discrete(linetype.label) + theme(legend.position = "top", legend.direction="vertical")
 		}
 		
 	
@@ -158,7 +158,7 @@ seqBFplot <- function(n, bf, linetype=NA, xlab="n", ylab="log(bf)", main="", yli
 
 
 	# set scale ticks
-	p1 <- p1 + scale_y_continuous(breaks=y_breaks, labels=c("-log(100)", "-log(30)", "-log(10)", "-log(3)", "log(1)", "log(3)", "log(10)", "log(30)", "log(100)"))
+	p1 <- p1 + scale_y_continuous(breaks=y_breaks, labels=c("1/100", "1/30", "1/10", "1/3", "1", "3", "10", "30", "100"))
 	
 
 	if (main != "") p1 <- p1 + ggtitle(main)

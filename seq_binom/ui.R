@@ -2,9 +2,12 @@ library(shiny)
 library(BayesFactor)
 library(shinythemes)
 
-shinyUI(fluidPage(theme = shinytheme("cosmo"),
+shinyUI(fluidPage(theme = shinytheme("spacelab"),
 	
 	title = "Is it fair?",
+	
+	# this file is needed for automatic resizing in the shiny apps.org framework
+	tags$head(tags$script(src="js/iframeResizer.contentWindow.min.js")),
 	
 	titlePanel("Is it fair?"),
 

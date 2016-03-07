@@ -447,7 +447,7 @@ shinyServer(function(input, output, session) {
         # draw default plot
         
         p_overview <- ggplot(dat$allData[1:dat$n,], aes_string(x="group", y=dv)) + 
-          stat_boxplot(geom ='errorbar', data = includedData, geom_params = list(color = "grey"), stat_params = list(width = 0.5)) + # draw vertical lines at lower and upper end
+          stat_boxplot(geom ='errorbar', data = includedData, color = "grey", width = 0.5) + # draw vertical lines at lower and upper end
           geom_boxplot(data = includedData, fill="grey", colour = "grey", alpha = 0.25) + # draw boxplot
           geom_point(data = includedData, shape = 16, size=4, fill = NA) + # show data points
           geom_point(data = excludedData, shape = 21, size=4, fill = NA, colour = "black", alpha = 0.5) + # show excluded points
