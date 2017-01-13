@@ -2,9 +2,13 @@
 library(shiny)
 #library(shinyIncubator)
 library(shinythemes)
-runApp("p-hacker")
+library(shinyjs)
 
-runApp("p-checker")
+runApp("PPV")
+
+runApp("p-hacker/p-hacker")
+
+runApp("../p-checker")
 
 runApp("Pick_a_prior")
 

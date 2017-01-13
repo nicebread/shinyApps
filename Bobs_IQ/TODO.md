@@ -1,0 +1,4 @@
+- schiefe Verteilung
+- Regression CI
+- Checkboxen für Auswahl CIs
+- Adaptive Slider für test scores
