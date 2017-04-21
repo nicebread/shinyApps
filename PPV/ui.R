@@ -73,6 +73,6 @@ such, because of bias. [...] Bias can entail manipulation in the analysis or rep
 			htmlOutput("res")
 		)			
 	),
-	
+	HTML("<b>This <a href='http://www.nicebread.de/whats-the-probability-that-a-significant-p-value-indicates-a-true-effect/'>blog post</a> gives an introduction to the app.</b><br>"),
 	HTML("This app is based on Ioannidis, J. P. A. (2005). Why most published research findings are false. PLoS Medicine, 2(8), e124. <a href='http://doi.org/10.1371/journal.pmed.0020124'>http://doi.org/10.1371/journal.pmed.0020124</a>")
 ))

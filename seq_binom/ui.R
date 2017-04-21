@@ -25,7 +25,8 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			checkboxInput("cb_autoupdate", "Update plot after each ball", TRUE)
 		),
 		column(width=7, 
-			plotOutput("seqplot")
+			plotOutput("seqplot"),
+			HTML("The BF computation uses the default prior of the <code>proportionBF</code> function in the BayesFactor package (see ?proportionBF).")
 		)
 	)
 ))

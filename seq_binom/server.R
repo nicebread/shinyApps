@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 source("seqplot.R")
 
 # construct a new environment for persistent data
