@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyjs)
 library(shinythemes)
 
 helpPopup <- function(title, content,
@@ -12,7 +13,7 @@ helpPopup <- function(title, content,
     ),
     tags$a(
       href = "#", class = "btn btn-sm", `data-toggle` = "popover",
-	  `data-container`="body",
+	  	`data-container`="body",
       title = title, `data-content` = content, `data-animation` = TRUE,
       `data-placement` = match.arg(placement, several.ok=TRUE)[1],
       `data-trigger` = match.arg(trigger, several.ok=TRUE)[1],
@@ -23,17 +24,18 @@ helpPopup <- function(title, content,
 }
 
 
-# Define UI for application that draws a histogram
+# Define UI for PPV application
 shinyUI(fluidPage(theme = shinytheme("spacelab"),
 
 	title = "Positive Predictive Value (PPV)",
+	shinyjs::useShinyjs(),
 
 	h2(HTML("When does a significant <i>p</i>-value indicate a true effect?")),
 	h3(HTML("Understanding the Positive Predictive Value (PPV) of a <i>p</i>-value")),
 
 	br(),
 
-	# Sidebar with a slider input for the number of bins
+	# Sidebar to select inputs
 	fluidRow(
 		# ---------------------------------------------------------------------
 		# Parameter column
@@ -43,10 +45,21 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			
 			p(HTML("What is your Type I error (&alpha;; typically 5%)?"), style = "font-style: italic; font-size: 0.85em; color:grey"),
 			sliderInput("alpha", HTML("&alpha; level"), min = 0.01, max = 0.1, value = 0.05, step = 0.01),
-			
-			p(HTML("On what power level are the studies conducted?"), style = "font-style: italic; font-size: 0.85em; color:grey"),
-			sliderInput("power", label = "Power", min = 0.01, max = 0.99, value = 0.35, step = 0.01),
-			
+
+                       ## NG 17-04-24: add sample size (n), effect size (d), and power_select
+                       p("Do you want to specify power directly or indirectly by specifying sample size per gorup and effect size? (Assuming a two-group t-test)", style = "font-style: italic; font-size: 0.85em; color:grey"),
+                       radioButtons("power_select", label=NULL,
+                                    choiceValues=list("power", "nd"),
+                                    choiceNames=list(HTML('<span style = "font-size: 0.85em">specify power (1-&beta;) directly</span>'), list(HTML('<span style = "font-size: 0.85em">specify power indirectly through sample size (n) and effect size (d)</span>')))),
+                       ## p(HTML("What is the power (&beta;) of the study?"), style = "font-style: italic; font-size: 0.85em; color:grey"),
+                       sliderInput("power", label = HTML("Power (1-&beta;)"), min = 0.01, max = 0.99, value = 0.35, step = 0.01),
+                       ## p("What is your sample size (n) per group?", style = "font-style: italic; font-size: 0.85em; color:grey"),
+											 conditionalPanel("input.power_select == 'nd'",
+	                       sliderInput("n", label = "Sample size per group (n)", min = 1, max = 100, value = 16, step = 1),
+	                       ## p("What is the standardized effect size (d)?", style = "font-style: italic; font-size: 0.85em; color:grey"),
+	                       sliderInput("d", label = "Effect size (d)", min = 0.1, max = 2, value = 1, step = .05)
+												), 
+
 			p(HTML("% of studies that report a significant result, although it's not"), helpPopup("What is 'p-hacking' in this context?", "The percentage refers to the proportion of all non-significant studies (both true negatives and false negatives, that are presented as significant. For details, see Ioannidis (2005):\n'Let u be the proportion of probed
 analyses that would not have been 'research findings', but nevertheless end up presented and reported as
 such, because of bias. [...] Bias can entail manipulation in the analysis or reporting of findings.'", placement='right', trigger='hover'), style = "font-style: italic; font-size: 0.85em; color:grey; line-height:30%"),
@@ -74,5 +87,6 @@ such, because of bias. [...] Bias can entail manipulation in the analysis or rep
 		)			
 	),
 	HTML("<b>This <a href='http://www.nicebread.de/whats-the-probability-that-a-significant-p-value-indicates-a-true-effect/'>blog post</a> gives an introduction to the app.</b><br>"),
-	HTML("This app is based on Ioannidis, J. P. A. (2005). Why most published research findings are false. PLoS Medicine, 2(8), e124. <a href='http://doi.org/10.1371/journal.pmed.0020124'>http://doi.org/10.1371/journal.pmed.0020124</a>")
+	HTML("This app is based on Ioannidis, J. P. A. (2005). Why most published research findings are false. PLoS Medicine, 2(8), e124. <a href='http://doi.org/10.1371/journal.pmed.0020124'>http://doi.org/10.1371/journal.pmed.0020124</a><br>
+	Thanks to Nat Goodman for adding the option to specify power via effect size and sample size.")
 ))

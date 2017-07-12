@@ -4,7 +4,7 @@ library(shiny)
 presetselection <- new.env()
 presetselection$sel <- "---"
 	
-# Define server logic required to draw a histogram
+# Define server logic for PPV application
 shinyServer(function(input, output, session) {
 	
 	# compute PPV etc only once for all outputs--> reactive values
@@ -27,7 +27,18 @@ shinyServer(function(input, output, session) {
 		# Alpha level
 		alpha <- input$alpha
 		# power
-		power <- input$power
+                # NG 17-04-24: let power be set indirectly by setting n and d
+                # NG 17-04-24: adjust power or d sliders based on other values
+                power <- input$power
+                n <- input$n
+                d <- input$d
+                if (input$power_select == "power") {
+                  d <- power.t.test(n=n,delta=NULL,power=power,sig.level=alpha)$delta
+                  isolate({updateSelectInput(session, inputId = "d", selected=d)})
+                } else {
+                  power <- power.t.test(n=n,delta=d,power=NULL,sig.level=alpha)$power
+                  isolate({updateSelectInput(session, inputId = "power", selected=power)})
+                 }
 		# beta Fehler
 		beta <- 1 - power
 		# bias
@@ -74,6 +85,14 @@ shinyServer(function(input, output, session) {
 		return(list(df=df, ppv=ppv, fdr=fdr, hit=hit, falsealarm=falsealarm, miss=miss, truerejection=truerejection, c=c))
 	})
 	
+	observeEvent(input$power_select, {
+		if (input$power_select == "nd") {
+			shinyjs::disable("power")
+		} else {
+			shinyjs::enable("power")
+		}
+	})
+	
 
 	
 	output$res <- renderUI({
@@ -113,54 +132,63 @@ shinyServer(function(input, output, session) {
 	observeEvent(input$preset, {
 		switch(input$preset,
 			"p1" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 0.50*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.80)
 				updateSliderInput(session, inputId = "bias", value = 0.10*100)				
 				},
 			"p2" = {
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 2/3*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.95)
 				updateSliderInput(session, inputId = "bias", value = 0.30*100)
 				},
 			"p3" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 0.25*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.80)
 				updateSliderInput(session, inputId = "bias", value = 0.40*100)
 				},
 			"p4" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/6*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.20)
 				updateSliderInput(session, inputId = "bias", value = 0.20*100)
 				},
 			"p5" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/6*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.20)
 				updateSliderInput(session, inputId = "bias", value = 0.80*100)
 				},
 			"p6" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/11*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.80)
 				updateSliderInput(session, inputId = "bias", value = 0.30*100)
 				},
 			"p7" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/11*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.20)
 				updateSliderInput(session, inputId = "bias", value = 0.30*100)
 				},
 			"p8" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/1001*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.20)
 				updateSliderInput(session, inputId = "bias", value = 0.80*100)
 				},
 			"p9" = {				
+				updateSliderInput(session, inputId = "power_select", value = "power")
 				updateSliderInput(session, inputId = "percTrue", value = 1/1001*100)
 				updateSliderInput(session, inputId = "alpha", value = 0.05)
 				updateSliderInput(session, inputId = "power", value = 0.20)
