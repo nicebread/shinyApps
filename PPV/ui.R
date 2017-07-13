@@ -47,7 +47,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 			sliderInput("alpha", HTML("&alpha; level"), min = 0.01, max = 0.1, value = 0.05, step = 0.01),
 
                        ## NG 17-04-24: add sample size (n), effect size (d), and power_select
-                       p("Do you want to specify power directly or indirectly by specifying sample size per gorup and effect size? (Assuming a two-group t-test)", style = "font-style: italic; font-size: 0.85em; color:grey"),
+                       p("Do you want to specify power directly or indirectly by specifying sample size per group and effect size? (Assuming a two-group t-test)", style = "font-style: italic; font-size: 0.85em; color:grey"),
                        radioButtons("power_select", label=NULL,
                                     choiceValues=list("power", "nd"),
                                     choiceNames=list(HTML('<span style = "font-size: 0.85em">specify power (1-&beta;) directly</span>'), list(HTML('<span style = "font-size: 0.85em">specify power indirectly through sample size (n) and effect size (d)</span>')))),
