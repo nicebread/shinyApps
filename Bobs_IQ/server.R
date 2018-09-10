@@ -21,7 +21,8 @@ shinyServer(function(input, output, session) {
 	})
 
   output$BobsIQplot <- renderPlot({	  
-  	BobsIQplot(mean.prior=as.numeric(input$mean.prior), sd.prior=as.numeric(input$sd.prior), y=input$y, reliability=input$reliability, known.sigma = dat$standard.error, known.sigma.regression = dat$standard.error.estimate, xlim=NA)
+  	#BobsIQplot(mean.prior=as.numeric(input$mean.prior), sd.prior=as.numeric(input$sd.prior), y=input$y, reliability=input$reliability, known.sigma = dat$standard.error, known.sigma.regression = dat$standard.error.estimate, xlim=NA)
+		BobsIQplot(mean.prior=as.numeric(input$mean.prior), sd.prior=as.numeric(input$sd.prior), y=input$y, known.sigma = dat$standard.error, xlim=NA)
   })
 })
 
