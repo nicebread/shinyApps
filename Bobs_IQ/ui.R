@@ -10,7 +10,7 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
 	fluidRow(
 		column(width=5,
 			h3("Properties of the test instrument"),
-			sliderInput("reliability", "Test reliability:", min = 0, max = .99, value = 0.8, step=.01),
+			sliderInput("reliability", "Test reliability:", min = 0.2, max = .99, value = 0.8, step=.01),
 			textInput("between.SD", "Between-person standard deviation of the test scores (e.g. 15 for IQ scores, or 1 for z scores)", "15"),
 			
 			h3("Obtained test score"),
